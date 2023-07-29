@@ -1,0 +1,17 @@
+@main {
+    v0: int = const 10;
+    v1: int = const 1;
+    result: int = const 1;
+    
+    .loop:
+        result = mul result v1;
+        v3: int = const 1;
+        v1 = add v1 v3;
+
+        .cond:
+            v4: bool = gt v1 v0;
+            br v4 .endLoop .loop;
+    
+    .endLoop:
+        print result;
+}
