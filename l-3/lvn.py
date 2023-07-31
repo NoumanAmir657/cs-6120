@@ -62,7 +62,7 @@ def lvn(func):
                 value = (op, ins.get('value'))
             elif op in BINARY:
                 value = (op, var2num.get(ins.get('args')[0]), var2num.get(ins.get('args')[1]))
-            elif op == 'print':
+            elif op == 'print' or op == 'id':
                 value = (op, var2num.get(ins.get('args')[0]))
 
             if value in table:
@@ -84,14 +84,24 @@ def lvn(func):
                 elif op == 'print':
                     # instruction change
                     ins['args'][0] = list(table.items())[value[1]][1]
+
+                elif op == 'id':
+                    #instruction change
+                    var2num[ins.get('dest')] = var2num[table[value]]
+                    ins['args'][0] = table[value]
                     
             else:
                 num += 1
 
-                if op in BINARY or op == 'const':
+                if op in BINARY or op == 'const' or op == 'id':
                     dest = ins.get('dest')
-                    table[value] = dest
-                    var2num[dest] = num
+
+                    if op == 'id':
+                        table[value] = ins.get('args')[0]
+                        var2num[dest] = var2num[ins.get('args')[0]]
+                    else:
+                        table[value] = dest
+                        var2num[dest] = num
 
                     # instruction change
                     for i, arg in enumerate(ins.get('args', [])):
@@ -100,17 +110,18 @@ def lvn(func):
                     table[value] = None
                     ins['args'][0] = list(table.items())[value[1]][1]
 
+
     func['instrs'] = list(itertools.chain(*blocks))
 
 if __name__ == '__main__':
     # read json from stdin
     prog = json.load(sys.stdin)
 
-    if sys.argv[1] == 'c':
+    if sys.argv[1] == '-c':
         for func in prog['functions']:
             change_block_main(func)
 
-    elif sys.argv[1] == 'l':
+    elif sys.argv[1] == '-l':
         for func in prog['functions']:
             lvn(func)
 
