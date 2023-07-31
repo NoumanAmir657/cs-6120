@@ -4,8 +4,7 @@ from collections import OrderedDict
 
 TERMINATORS = ['jmp', 'br', 'ret']
 
-def form_blocks(body):
-    blocks = []
+def form_blocks(body):    
     current_block = []
     
     for ins in body:
@@ -13,18 +12,16 @@ def form_blocks(body):
             current_block.append(ins)
 
             if ins['op'] in TERMINATORS:
-                blocks.append(current_block)
+                yield current_block
                 current_block = []
         else:
             if current_block:
-                blocks.append(current_block)
+                yield current_block
             
             current_block = [ins]
 
     if current_block:
-        blocks.append(current_block)
-        
-    return blocks
+        yield current_block
 
 def block_map(blocks):
     out = OrderedDict()
