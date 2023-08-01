@@ -42,6 +42,33 @@ def change_block(blocks):
                 newVar[ins['dest']] = newName
                 ins['dest'] = newName
                 cnt += 1
+
+def change_value(value, table):
+    op = value[0]
+    operand_1 = list(table.items())[value[1]][0][1]
+    operand_2 = list(table.items())[value[2]][0][1]
+
+    if op == 'add':
+        res = operand_1 + operand_2
+    elif op == 'sub':
+        res = operand_1 - operand_2
+    elif op == 'mul':
+        res = operand_1 * operand_2
+    elif op == 'div':
+        res = int(operand_1 / operand_2)
+    elif op == 'eq':
+        res = operand_1 == operand_2
+    elif op == 'lt':
+        res = operand_1 < operand_2
+    elif op == 'gt':
+        res = operand_1 > operand_2
+    elif op == 'le':
+        res = operand_1 <= operand_2
+    elif op == 'ge':
+        res = operand_1 >= operand_2
+    
+    return ('const', res)
+
     
 def lvn(func):
     blocks = list(form_blocks(func['instrs']))
@@ -64,6 +91,14 @@ def lvn(func):
                 sorted_operands = [var2num.get(ins.get('args')[0]), var2num.get(ins.get('args')[1])]
                 sorted_operands.sort()
                 value = (op, sorted_operands[0], sorted_operands[1])
+                
+                value = change_value(value, table)
+                
+                op = 'const'
+                ins['op'] = 'const'
+                ins['value'] = value[1]
+                del ins['args']
+            
             elif op == 'print' or op == 'id':
                 value = (op, var2num.get(ins.get('args')[0]))
 
