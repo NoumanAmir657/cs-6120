@@ -61,7 +61,9 @@ def lvn(func):
             if op == 'const':
                 value = (op, ins.get('value'))
             elif op in BINARY:
-                value = (op, var2num.get(ins.get('args')[0]), var2num.get(ins.get('args')[1]))
+                sorted_operands = [var2num.get(ins.get('args')[0]), var2num.get(ins.get('args')[1])]
+                sorted_operands.sort()
+                value = (op, sorted_operands[0], sorted_operands[1])
             elif op == 'print' or op == 'id':
                 value = (op, var2num.get(ins.get('args')[0]))
 
