@@ -4,6 +4,19 @@ from collections import OrderedDict
 
 TERMINATORS = ['jmp', 'br', 'ret']
 
+def edges(blocks):
+    """Given a block map containing blocks complete with terminators,
+    generate two mappings: predecessors and successors. Both map block
+    names to lists of block names.
+    """
+    preds = {name: [] for name in blocks}
+    succs = {name: [] for name in blocks}
+    for name, block in blocks.items():
+        for succ in successors(block[-1]):
+            succs[name].append(succ)
+            preds[succ].append(name)
+    return preds, succs
+
 def add_terminators(blocks):
     """Given an ordered block map, modify the blocks to add terminators
     to all blocks (avoiding "fall-through" control flow transfers).

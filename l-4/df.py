@@ -15,10 +15,6 @@ def rd(func):
     blk_map = block_map((form_blocks(func['instrs'])))
     add_terminators(blk_map)
 
-    for name, block in blk_map.items():
-        print(name)
-        print('     ', block)
-
 
 if __name__ == '__main__':
     prog = json.load(sys.stdin)
