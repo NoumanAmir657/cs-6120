@@ -4,7 +4,7 @@ from collections import OrderedDict
 import itertools
 
 sys.path.insert(0, '/home/nouman/Code/CS-6120/l-2')
-from mycfg import form_blocks
+from cfg import form_blocks
 
 def print_block(blocks):
     for block in blocks:

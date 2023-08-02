@@ -56,7 +56,7 @@ def get_cfg(name2block):
     
     return out
 
-def mycfg():
+def cfg():
     # prog = json.dumps(json.load(sys.stdin), indent = 2) # for pretty printing on the stdout
     prog = json.load(sys.stdin)
     
@@ -72,4 +72,4 @@ def mycfg():
         print(cfg)
 
 if __name__ == "__main__":
-    mycfg()
+    cfg()
