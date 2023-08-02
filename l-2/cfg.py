@@ -4,6 +4,26 @@ from collections import OrderedDict
 
 TERMINATORS = ['jmp', 'br', 'ret']
 
+def add_terminators(blocks):
+    """Given an ordered block map, modify the blocks to add terminators
+    to all blocks (avoiding "fall-through" control flow transfers).
+    """
+    for i, block in enumerate(blocks.values()):
+        if not block:
+            if i == len(blocks) - 1:
+                # In the last block, return.
+                block.append({'op': 'ret', 'args': []})
+            else:
+                dest = list(blocks.keys())[i + 1]
+                block.append({'op': 'jmp', 'labels': [dest]})
+        elif block[-1]['op'] not in TERMINATORS:
+            if i == len(blocks) - 1:
+                block.append({'op': 'ret', 'args': []})
+            else:
+                # Otherwise, jump to the next block.
+                dest = list(blocks.keys())[i + 1]
+                block.append({'op': 'jmp', 'labels': [dest]})
+
 def form_blocks(body):    
     current_block = []
     
