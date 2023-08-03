@@ -4,6 +4,19 @@ from collections import OrderedDict
 
 TERMINATORS = ['jmp', 'br', 'ret']
 
+def successors(instr):
+    """Get the list of jump target labels for an instruction.
+
+    Raises a ValueError if the instruction is not a terminator (jump,
+    branch, or return).
+    """
+    if instr['op'] in ('jmp', 'br'):
+        return instr['labels']
+    elif instr['op'] == 'ret':
+        return []  # No successors to an exit block.
+    else:
+        raise ValueError('{} is not a terminator'.format(instr['op']))
+
 def edges(blocks):
     """Given a block map containing blocks complete with terminators,
     generate two mappings: predecessors and successors. Both map block
