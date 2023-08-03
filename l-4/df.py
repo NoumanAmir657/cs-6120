@@ -12,13 +12,16 @@ def print_blocks(blocks):
 
 
 def worklist_algo(blocks, direction, init, transfer, merge):
-    pre, suc = edges(blocks)
+    if direction:
+        pre, suc = edges(blocks)
+        entry_block = list(blocks.keys())[0]
+    else:
+        suc, pre = edges(blocks)
+        entry_block = list(blocks.keys())[-1]
 
     in_ = {}
     out_ = {}
 
-    entry_block = list(blocks.keys())[0]
-    
     in_[entry_block] = init
     for block in blocks:
         out_[block] = init
@@ -35,7 +38,10 @@ def worklist_algo(blocks, direction, init, transfer, merge):
             out_[b] = outv
             worklist += suc[b]
     
-    return in_, out_
+    if direction:
+        return in_, out_
+    else:
+        return out_, in_
 
 def union(sets):
     out = set()
@@ -52,13 +58,35 @@ def rd_transfer(block, inv):
 
     return outv
 
-
-
 def rd(func):
     blk_map = block_map((form_blocks(func['instrs'])))
     add_terminators(blk_map)
     
-    in_, out_ = worklist_algo(blk_map, 'f', set([arg['name'] for arg in func['args']]), rd_transfer, union)
+    in_, out_ = worklist_algo(blk_map, True, set(), rd_transfer, union)
+
+    for block in blk_map:
+        print(block)
+        print('\t', in_[block])
+        print('\t', out_[block])
+        print('\n')
+
+def live_transfer(block, inv):
+    defined = set()
+    used = set()
+
+    for ins in block:
+        used.update(arg for arg in ins.get('args', []) if arg not in defined)
+        if 'dest' in ins:
+            defined.add(ins['dest'])
+
+
+    return used.union(inv - {ins['dest'] for ins in block if 'dest' in ins})
+
+def live(func):
+    blk_map = block_map((form_blocks(func['instrs'])))
+    add_terminators(blk_map)
+    
+    in_, out_ = worklist_algo(blk_map, False, set(), live_transfer, union)
 
     for block in blk_map:
         print(block)
@@ -71,4 +99,4 @@ if __name__ == '__main__':
     prog = json.load(sys.stdin)
 
     for func in prog['functions']:
-        rd(func)
+        live(func)
