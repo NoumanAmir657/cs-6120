@@ -93,9 +93,9 @@ if __name__ == '__main__':
     prog = json.load(sys.stdin)
 
     if len(sys.argv) > 1:
-        if sys.argv[1] == 'define':
+        if sys.argv[1] == '-define':
             df = rd
-        elif sys.argv[1] == 'live':
+        elif sys.argv[1] == '-live':
             df = live
     else:
         df = rd
