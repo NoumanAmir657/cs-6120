@@ -4,7 +4,7 @@ sys.path.insert(0, '../l-2')
 import json
 from collections import defaultdict
 
-from cfg import form_blocks, block_map, add_terminators, edges
+from cfg import form_blocks, block_map, add_terminators, edges, reassemble
 from dominator import get_dom_tree, get_dom_fronts, get_dom
 
 def get_Defs(name_to_block):
@@ -31,6 +31,26 @@ def get_phi_nodes_loc(Defs, dom_fronts, name_to_block):
                         list_blocks.append(df)
     
     return phi_node_loc
+
+def insert_phis(name_to_block, phi_args, phi_dests, types):
+    for block, instrs in name_to_block.items():
+        for dest, pairs in sorted(phi_args[block].items()):
+            phi = {
+                'op': 'phi',
+                'dest': phi_dests[block][dest],
+                'type': types[dest],
+                'labels': [p[0] for p in pairs],
+                'args': [p[1] for p in pairs],
+            }
+            instrs.insert(0, phi)
+
+def get_types(func):
+    types = {arg['name']: arg['type'] for arg in func.get('args', [])}
+    for instr in func['instrs']:
+        if 'dest' in instr:
+            types[instr['dest']] = instr['type']
+    return types
+
 
 def rename_variables(phi_nodes_loc, name_to_block, succ, dom_tree):
     stack = defaultdict(list)
@@ -88,7 +108,14 @@ if __name__ == '__main__':
         dom = get_dom(func)
         dom_tree = get_dom_tree(dom)
         dom_fronts = get_dom_fronts(dom, func)
+        types = get_types(func)
 
         phi_nodes_loc = get_phi_nodes_loc(Defs, dom_fronts, name_to_block)
 
-        phi_args, phi_dests =  rename_variables(phi_nodes_loc, name_to_block, succ, dom_tree)        
+        phi_args, phi_dests =  rename_variables(phi_nodes_loc, name_to_block, succ, dom_tree)
+
+        insert_phis(name_to_block, phi_args, phi_dests, types)
+
+        func['instrs'] = reassemble(name_to_block)
+
+    print(json.dumps(prog, indent=2, sort_keys=True))
