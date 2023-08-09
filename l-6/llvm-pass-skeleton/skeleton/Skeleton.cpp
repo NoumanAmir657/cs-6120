@@ -13,23 +13,31 @@ namespace {
     SkeletonPass() : FunctionPass(ID) {}
 
     virtual bool runOnFunction(Function &F) {
-      errs() << "Function: " << F.getName() << "\n";
+      LLVMContext& Ctx = F.getContext();
 
+      auto printOp = F.getParent()->getOrInsertFunction(
+        "printOp", Type::getVoidTy(Ctx), Type::getInt32Ty(Ctx)
+      );
+      
       for (auto& B: F) {
 	      for (auto& I: B) {
           if (auto* op = dyn_cast<BinaryOperator>(&I)) {
             IRBuilder<> builder(op);
+            builder.SetInsertPoint(&B, ++builder.GetInsertPoint());
 
-            Value* lhs = op->getOperand(0);
-            Value* rhs = op->getOperand(1);
-            Value* mul = builder.CreateMul(lhs, rhs);
-
-            for (auto& U: op->uses()){
-              User* user = U.getUser();
-              user->setOperand(U.getOperandNo(), mul);
-            }
-
+            Value* args = {op};
+            builder.CreateCall(printOp, args);
+            
             return true;
+
+            // Value* lhs = op->getOperand(0);
+            // Value* rhs = op->getOperand(1);
+            // Value* mul = builder.CreateMul(lhs, rhs);
+
+            // for (auto& U: op->uses()){
+            //   User* user = U.getUser();
+            //   user->setOperand(U.getOperandNo(), mul);
+            // }
           }
         }
       }
