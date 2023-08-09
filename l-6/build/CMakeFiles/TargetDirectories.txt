@@ -1,8 +1,0 @@
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/CMakeFiles/intrinsics_gen.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/CMakeFiles/omp_gen.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/CMakeFiles/acc_gen.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/CMakeFiles/edit_cache.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/CMakeFiles/rebuild_cache.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/skeleton/CMakeFiles/SkeletonPass.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/skeleton/CMakeFiles/edit_cache.dir
-/home/nouman/Code/CS-6120/l-6/llvm-pass-skeleton/build/skeleton/CMakeFiles/rebuild_cache.dir
